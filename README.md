@@ -21,11 +21,13 @@ From selecting the right crop for their soil to identifying diseases before they
 
 ### Key Features
 
-* **🤖 AI Crop Recommendation:** Suggests optimal crops by analyzing factors like soil type, weather patterns, and geographical location.
-* **🌿 Plant Disease Detection:** Allows users to upload an image of a plant leaf to instantly identify potential diseases using a machine learning model.
-* **☀️ Weather Forecast:** Provides current and multi-day weather forecasts, tailored to the user's location, to help with planning irrigation, planting, and harvesting.
-* **📈 Market Price Tracking:** Delivers up-to-date market information for various crops from nearby agricultural markets, empowering farmers to sell their produce at the best possible time.
-* **👤 User Personalization:** Features a secure user authentication system where farmers can set their location and preferences for a customized experience.
+* **📅 AI Smart Calendar:** Generates personalized week-by-week farming schedules (fertilizer, irrigation) for any crop using Gemini AI.
+* **📸 Visual AI Assistant:** A multimodal chatbot (Voice + Text + Image) that can analyze plant images, answer farming queries, and speak back in local languages.
+* **👥 Kisan Forum:** A community space for farmers to share tips, ask questions, and interact with peers.
+* **🌿 Plant Diagnosis:** Instantly identifies crop diseases from photos and provides treatment solutions.
+* **☀️ Weather Dashboard:** Real-time temperature, humidity, and 5-day forecasts for any Indian city.
+* **📈 Market Insights:** Track mandi prices and trends for various crops.
+* **🗣️ Bilingual Support:** Fully localized interface in English and Hindi (हिंदी).
 
 ---
 
