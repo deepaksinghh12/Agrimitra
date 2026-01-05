@@ -1,303 +1,203 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
+import { Camera, Upload, AlertTriangle, CheckCircle, ArrowLeft, Loader2, RefreshCw } from "lucide-react"
 import Link from "next/link"
-import { ArrowLeft, Camera, Upload, Loader2, CheckCircle, AlertTriangle } from "lucide-react"
 
 export default function DiagnosisPage() {
   const [step, setStep] = useState<"upload" | "analyzing" | "result">("upload")
-  const [progress, setProgress] = useState(0)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [result, setResult] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
     if (file) {
       const reader = new FileReader()
-      reader.onload = (e) => {
-        setSelectedImage(e.target?.result as string)
-        analyzeImage()
+      reader.onload = (event) => {
+        setSelectedImage(event.target?.result as string)
+        setStep("analyzing")
+        analyzeImage(file)
       }
       reader.readAsDataURL(file)
     }
   }
 
-  const analyzeImage = () => {
-    setStep("analyzing")
-    setProgress(0)
+  const analyzeImage = async (file: File) => {
+    setError(null)
+    const formData = new FormData()
+    formData.append("image", file)
 
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setStep("result")
-          return 100
-        }
-        return prev + 10
+    try {
+      const response = await fetch("/api/diagnose", {
+        method: "POST",
+        body: formData,
       })
-    }, 300)
+
+      if (!response.ok) {
+        throw new Error("Failed to analyze image")
+      }
+
+      const data = await response.json()
+      setResult(data)
+      setStep("result")
+    } catch (err) {
+      setError("Failed to analyze image. Please try again.")
+      setStep("upload")
+    }
   }
 
-  const mockResult = {
-    disease: "Tomato Late Blight",
-    confidence: 94,
-    severity: "Moderate",
-    description:
-      "Late blight is a serious disease affecting tomato plants, caused by the fungus Phytophthora infestans.",
-    symptoms: [
-      "Dark brown spots on leaves",
-      "White fuzzy growth on leaf undersides",
-      "Rapid spreading in humid conditions",
-    ],
-    remedies: [
-      "Remove affected leaves immediately",
-      "Apply copper-based fungicide",
-      "Improve air circulation",
-      "Avoid overhead watering",
-    ],
-    prevention: ["Plant resistant varieties", "Ensure proper spacing", "Water at soil level"],
+  const resetDiagnosis = () => {
+    setStep("upload")
+    setSelectedImage(null)
+    setResult(null)
+    setError(null)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
-      {/* Header */}
-      <div className="bg-green-600 text-white p-4 shadow-lg">
-        <div className="flex items-center gap-3 max-w-md mx-auto">
+    <div className="min-h-screen bg-green-50 p-4 font-sans">
+      <div className="max-w-md mx-auto space-y-4">
+        {/* Header */}
+        <div className="flex items-center gap-2 mb-6">
           <Link href="/">
-            <Button variant="ghost" size="icon" className="text-white hover:bg-green-700">
-              <ArrowLeft className="w-5 h-5" />
+            <Button variant="ghost" size="icon" className="hover:bg-green-100">
+              <ArrowLeft className="w-5 h-5 text-green-700" />
             </Button>
           </Link>
-          <div>
-            <h1 className="text-lg font-bold">🪴 Crop Diagnosis</h1>
-            <p className="text-green-100 text-sm">AI-powered plant disease detection</p>
-          </div>
+          <h1 className="text-xl font-bold text-green-800">Crop Doctor</h1>
         </div>
-      </div>
 
-      <div className="p-4 max-w-md mx-auto space-y-4">
         {step === "upload" && (
-          <>
-            {/* Upload Section */}
-            <Card className="border-green-200">
-              <CardHeader>
-                <CardTitle className="text-green-700 text-center">📷 Take or Upload Plant Photo</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
-                  <label htmlFor="camera-input">
-                    <Button className="w-full h-20 bg-green-600 hover:bg-green-700 flex-col gap-2">
-                      <Camera className="w-6 h-6" />
-                      <span className="text-sm">Take Photo</span>
-                    </Button>
-                    <input
-                      id="camera-input"
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      className="hidden"
-                      onChange={handleImageUpload}
-                    />
-                  </label>
-
-                  <label htmlFor="upload-input">
-                    <Button
-                      variant="outline"
-                      className="w-full h-20 border-green-300 text-green-700 hover:bg-green-50 flex-col gap-2 bg-transparent"
-                    >
-                      <Upload className="w-6 h-6" />
-                      <span className="text-sm">Upload Photo</span>
-                    </Button>
-                    <input
-                      id="upload-input"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageUpload}
-                    />
-                  </label>
-                </div>
-
-                <div className="text-center text-sm text-gray-600 space-y-2">
-                  <p>
-                    📋 <strong>Tips for best results:</strong>
-                  </p>
-                  <ul className="text-left space-y-1 bg-green-50 p-3 rounded-lg">
-                    <li>• Take clear, well-lit photos</li>
-                    <li>• Focus on affected plant parts</li>
-                    <li>• Include leaves, stems, or fruits</li>
-                    <li>• Avoid blurry or dark images</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Diagnoses */}
-            <Card className="border-green-200">
-              <CardHeader>
-                <CardTitle className="text-green-700 text-sm">📊 Recent Diagnoses</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-green-200 rounded"></div>
-                    <div>
-                      <div className="text-sm font-medium">Tomato Blight</div>
-                      <div className="text-xs text-gray-500">2 hours ago</div>
-                    </div>
+          <Card className="border-green-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-center text-green-800">Upload Plant Photo</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <label className="cursor-pointer">
+                  <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageSelect} />
+                  <div className="flex flex-col items-center justify-center h-32 bg-green-100 rounded-lg hover:bg-green-200 transition-colors border-2 border-dashed border-green-300">
+                    <Camera className="w-8 h-8 text-green-600 mb-2" />
+                    <span className="text-sm font-medium text-green-700">Camera</span>
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    94%
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-green-50 rounded">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-green-200 rounded"></div>
-                    <div>
-                      <div className="text-sm font-medium">Healthy Plant</div>
-                      <div className="text-xs text-gray-500">Yesterday</div>
-                    </div>
+                </label>
+                <label className="cursor-pointer">
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageSelect} />
+                  <div className="flex flex-col items-center justify-center h-32 bg-white rounded-lg hover:bg-gray-50 transition-colors border-2 border-dashed border-green-300">
+                    <Upload className="w-8 h-8 text-green-600 mb-2" />
+                    <span className="text-sm font-medium text-green-700">Gallery</span>
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    98%
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
+                </label>
+              </div>
 
-        {step === "analyzing" && (
-          <Card className="border-green-200">
-            <CardContent className="p-6 text-center space-y-4">
-              {selectedImage && (
-                <div className="w-32 h-32 mx-auto rounded-lg overflow-hidden">
-                  <img
-                    src={selectedImage || "/placeholder.svg"}
-                    alt="Uploaded plant"
-                    className="w-full h-full object-cover"
-                  />
+              {error && (
+                <div className="p-3 bg-red-50 text-red-700 rounded-md text-sm text-center">
+                  {error}
                 </div>
               )}
 
-              <div className="space-y-3">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto text-green-600" />
-                <h3 className="text-lg font-semibold text-green-700">🔍 Analyzing your plant...</h3>
-                <p className="text-sm text-gray-600">Our AI is examining the image for diseases and pests</p>
-
-                <div className="space-y-2">
-                  <Progress value={progress} className="w-full" />
-                  <p className="text-xs text-gray-500">{progress}% Complete</p>
-                </div>
+              <div className="bg-blue-50 p-3 rounded-md text-sm text-blue-800">
+                <p className="font-semibold mb-1">Tips:</p>
+                <ul className="list-disc list-inside space-y-1 opacity-80">
+                  <li>Ensure good lighting</li>
+                  <li>Focus on the affected area</li>
+                  <li>Keep the image steady</li>
+                </ul>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {step === "result" && (
-          <>
-            {/* Result Header */}
-            <Card className="border-green-200">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  {selectedImage && (
-                    <div className="w-16 h-16 rounded-lg overflow-hidden">
-                      <img
-                        src={selectedImage || "/placeholder.svg"}
-                        alt="Analyzed plant"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <AlertTriangle className="w-5 h-5 text-orange-500" />
-                      <h3 className="font-semibold text-gray-800">{mockResult.disease}</h3>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {mockResult.confidence}% Confidence
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {mockResult.severity}
-                      </Badge>
-                    </div>
+        {step === "analyzing" && (
+          <Card className="border-green-200 shadow-sm">
+            <CardContent className="pt-6 pb-8 text-center space-y-6">
+              <div className="relative w-32 h-32 mx-auto">
+                {selectedImage && <img src={selectedImage} alt="Analyzing" className="w-full h-full object-cover rounded-lg opacity-50" />}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Loader2 className="w-10 h-10 text-green-600 animate-spin" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-green-800">Analyzing Crop...</h2>
+                <p className="text-sm text-gray-500">Identifying potential diseases and remedies</p>
+              </div>
+              <Progress value={66} className="w-[80%] mx-auto h-2" />
+            </CardContent>
+          </Card>
+        )}
+
+        {step === "result" && result && (
+          <div className="space-y-4">
+            {/* Main Result Card */}
+            <Card className="border-green-200 shadow-md overflow-hidden">
+              <div className="relative h-48 bg-gray-100">
+                {selectedImage && <img src={selectedImage} alt="Result" className="w-full h-full object-cover" />}
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <h2 className="text-white text-xl font-bold">{result.disease}</h2>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant={result.severity === 'High' ? "destructive" : "secondary"} className="text-xs">
+                      Severity: {result.severity}
+                    </Badge>
+                    <Badge variant="outline" className="text-white border-white/50 text-xs text-black bg-white/40">
+                      {result.confidence}% Confidence
+                    </Badge>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600">{mockResult.description}</p>
+              </div>
+              <CardContent className="p-4">
+                <p className="text-gray-700 leading-relaxed">{result.description}</p>
               </CardContent>
             </Card>
 
-            {/* Symptoms */}
-            <Card className="border-orange-200">
-              <CardHeader>
-                <CardTitle className="text-orange-700 text-sm flex items-center gap-2">🔍 Symptoms Detected</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {mockResult.symptoms.map((symptom, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 text-orange-500" />
-                    <span>{symptom}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            {/* Details Cards */}
+            {result.symptoms && result.symptoms.length > 0 && (
+              <Card className="border-orange-100 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold text-orange-700 flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4" /> Symptoms
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-1">
+                    {result.symptoms.map((s: string, i: number) => (
+                      <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                        <span className="mt-1.5 w-1.5 h-1.5 bg-orange-400 rounded-full flex-shrink-0" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Remedies */}
-            <Card className="border-green-200">
-              <CardHeader>
-                <CardTitle className="text-green-700 text-sm flex items-center gap-2">
-                  💊 Recommended Treatment
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {mockResult.remedies.map((remedy, index) => (
-                  <div key={index} className="flex items-start gap-2 text-sm">
-                    <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-xs font-bold text-green-600">{index + 1}</span>
-                    </div>
-                    <span>{remedy}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            {result.remedies && result.remedies.length > 0 && (
+              <Card className="border-green-100 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-semibold text-green-700 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" /> Remedies
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {result.remedies.map((r: string, i: number) => (
+                      <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                        <span className="bg-green-100 text-green-700 text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0 mt-0.5">{i + 1}</span>
+                        {r}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Prevention */}
-            <Card className="border-blue-200">
-              <CardHeader>
-                <CardTitle className="text-blue-700 text-sm flex items-center gap-2">🛡️ Prevention Tips</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {mockResult.prevention.map((tip, index) => (
-                  <div key={index} className="flex items-center gap-2 text-sm">
-                    <CheckCircle className="w-4 h-4 text-blue-500" />
-                    <span>{tip}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                onClick={() => {
-                  setStep("upload")
-                  setSelectedImage(null)
-                  setProgress(0)
-                }}
-                variant="outline"
-                className="border-green-300 text-green-700"
-              >
-                📷 New Diagnosis
-              </Button>
-              <Button className="bg-green-600 hover:bg-green-700">💬 Ask Expert</Button>
-            </div>
-          </>
+            <Button onClick={resetDiagnosis} className="w-full bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-200">
+              <RefreshCw className="w-4 h-4 mr-2" /> Analyze Another
+            </Button>
+          </div>
         )}
       </div>
     </div>

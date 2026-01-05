@@ -16,57 +16,57 @@ export default function MarketPage() {
   const marketData = [
     {
       name: "Tomato",
-      nameKn: "ಟೊಮೇಟೊ",
+      nameHi: "टमाटर",
       price: 45,
       unit: "kg",
       change: +12,
       trend: "up",
-      market: "Bangalore APMC",
+      market: "Azadpur Mandi",
     },
     {
       name: "Onion",
-      nameKn: "ಈರುಳ್ಳಿ",
+      nameHi: "प्याज",
       price: 28,
       unit: "kg",
       change: -5,
       trend: "down",
-      market: "Mysore Market",
+      market: "Nashik Mandi",
     },
     {
-      name: "Rice",
-      nameKn: "ಅಕ್ಕಿ",
-      price: 35,
+      name: "Rice (Basmati)",
+      nameHi: "चावल (बासमती)",
+      price: 95,
       unit: "kg",
-      change: 0,
-      trend: "stable",
-      market: "Mandya APMC",
+      change: +2,
+      trend: "up",
+      market: "Karnal Mandi",
     },
     {
       name: "Potato",
-      nameKn: "ಆಲೂಗಡ್ಡೆ",
+      nameHi: "आलू",
       price: 22,
       unit: "kg",
       change: +8,
       trend: "up",
-      market: "Hassan Market",
+      market: "Agra Mandi",
     },
     {
-      name: "Chili",
-      nameKn: "ಮೆಣಸಿನಕಾಯಿ",
-      price: 120,
-      unit: "kg",
-      change: +15,
-      trend: "up",
-      market: "Hubli APMC",
+      name: "Wheat",
+      nameHi: "गेहूं",
+      price: 2250,
+      unit: "quintal",
+      change: 0,
+      trend: "stable",
+      market: "Khanna Mandi",
     },
     {
       name: "Cotton",
-      nameKn: "ಹತ್ತಿ",
+      nameHi: "कपास",
       price: 6800,
       unit: "quintal",
       change: -200,
       trend: "down",
-      market: "Raichur Market",
+      market: "Rajkot Mandi",
     },
   ]
 
@@ -101,6 +101,11 @@ export default function MarketPage() {
         return "text-gray-600"
     }
   }
+
+  const filteredData = marketData.filter(item =>
+    item.name.toLowerCase().includes(query.toLowerCase()) ||
+    item.nameHi.includes(query)
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-green-100">
@@ -144,7 +149,7 @@ export default function MarketPage() {
                 {isListening ? (
                   <>
                     <div className="w-4 h-4 bg-white rounded-full animate-pulse mr-2"></div>
-                    Listening... (Kannada/English)
+                    Listening... (Hindi/English)
                   </>
                 ) : (
                   <>🎤 Ask Market Price</>
@@ -190,12 +195,11 @@ export default function MarketPage() {
             </Badge>
           </h3>
 
-          {marketData.map((crop, index) => (
+          {filteredData.map((crop, index) => (
             <Card
               key={index}
-              className={`border-green-200 hover:shadow-md transition-shadow cursor-pointer ${
-                selectedCrop === crop.name ? "ring-2 ring-green-500 bg-green-50" : ""
-              }`}
+              className={`border-green-200 hover:shadow-md transition-shadow cursor-pointer ${selectedCrop === crop.name ? "ring-2 ring-green-500 bg-green-50" : ""
+                }`}
               onClick={() => setSelectedCrop(selectedCrop === crop.name ? null : crop.name)}
             >
               <CardContent className="p-4">
@@ -203,7 +207,7 @@ export default function MarketPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-semibold text-gray-800">{crop.name}</h4>
-                      <span className="text-sm text-gray-500">({crop.nameKn})</span>
+                      <span className="text-sm text-gray-500">({crop.nameHi})</span>
                     </div>
                     <div className="text-xs text-gray-500">{crop.market}</div>
                   </div>

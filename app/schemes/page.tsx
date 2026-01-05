@@ -18,7 +18,7 @@ export default function SchemesPage() {
     {
       id: "pm-kisan",
       title: "PM-KISAN Samman Nidhi",
-      titleKn: "ಪಿಎಂ-ಕಿಸಾನ್ ಸಮ್ಮಾನ್ ನಿಧಿ",
+      titleHi: "पीएम-किसान सम्मान निधि",
       benefit: "₹6,000 per year",
       category: "Direct Benefit Transfer",
       eligibility: "Small & marginal farmers with landholding up to 2 hectares",
@@ -31,7 +31,7 @@ export default function SchemesPage() {
     {
       id: "drip-irrigation",
       title: "Drip Irrigation Subsidy",
-      titleKn: "ಡ್ರಿಪ್ ಇರಿಗೇಷನ್ ಸಬ್ಸಿಡಿ",
+      titleHi: "टपक सिंचाई सब्सिडी",
       benefit: "Up to 55% subsidy",
       category: "Water Conservation",
       eligibility: "All categories of farmers",
@@ -44,7 +44,7 @@ export default function SchemesPage() {
     {
       id: "crop-insurance",
       title: "Pradhan Mantri Fasal Bima Yojana",
-      titleKn: "ಪ್ರಧಾನ ಮಂತ್ರಿ ಫಸಲ್ ಬೀಮಾ ಯೋಜನೆ",
+      titleHi: "प्रधानमंत्री फसल बीमा योजना",
       benefit: "Crop loss compensation",
       category: "Insurance",
       eligibility: "All farmers growing notified crops",
@@ -56,7 +56,7 @@ export default function SchemesPage() {
     {
       id: "soil-health",
       title: "Soil Health Card Scheme",
-      titleKn: "ಮಣ್ಣಿನ ಆರೋಗ್ಯ ಕಾರ್ಡ್ ಯೋಜನೆ",
+      titleHi: "मृदा स्वास्थ्य कार्ड योजना",
       benefit: "Free soil testing",
       category: "Soil Management",
       eligibility: "All farmers",
@@ -64,6 +64,19 @@ export default function SchemesPage() {
         "Provides soil nutrient status and recommendations on appropriate dosage of nutrients for improving soil health.",
       documents: ["Land Records", "Farmer ID"],
       applicationLink: "https://soilhealth.dac.gov.in",
+      status: "Active",
+    },
+    {
+      id: "kcc",
+      title: "Kisan Credit Card (KCC)",
+      titleHi: "किसान क्रेडिट कार्ड (KCC)",
+      benefit: "Low interest loans",
+      category: "Credit",
+      eligibility: "Farmers, Tenant Farmers, Share Croppers",
+      description:
+        "Adequate and timely credit support from the banking system under a single window with flexible and simplified procedure.",
+      documents: ["Aadhaar Card", "Land Records", "Passport Photo"],
+      applicationLink: "https://www.myscheme.gov.in/schemes/kcc",
       status: "Active",
     },
   ]
@@ -128,7 +141,7 @@ export default function SchemesPage() {
               {isListening ? (
                 <>
                   <div className="w-4 h-4 bg-white rounded-full animate-pulse mr-2"></div>
-                  Listening... (Kannada/English)
+                  Listening... (Hindi/English)
                 </>
               ) : (
                 <>🎤 Ask About Schemes</>
@@ -179,7 +192,7 @@ export default function SchemesPage() {
                     <div className="flex items-center justify-between w-full">
                       <div className="text-left">
                         <CardTitle className="text-sm font-semibold text-gray-800 mb-1">{scheme.title}</CardTitle>
-                        <div className="text-xs text-gray-500 mb-2">{scheme.titleKn}</div>
+                        <div className="text-xs text-gray-500 mb-2">{scheme.titleHi}</div>
                         <div className="flex items-center gap-2">
                           <Badge variant="secondary" className="text-xs">
                             {scheme.category}
@@ -190,9 +203,8 @@ export default function SchemesPage() {
                         </div>
                       </div>
                       <ChevronDown
-                        className={`w-5 h-5 text-gray-400 transition-transform ${
-                          openSchemes.includes(scheme.id) ? "rotate-180" : ""
-                        }`}
+                        className={`w-5 h-5 text-gray-400 transition-transform ${openSchemes.includes(scheme.id) ? "rotate-180" : ""
+                          }`}
                       />
                     </div>
                   </CardHeader>
@@ -247,7 +259,7 @@ export default function SchemesPage() {
             <h4 className="font-semibold text-blue-700 mb-2">Need Help with Applications?</h4>
             <p className="text-sm text-blue-600 mb-3">Our experts can guide you through the application process</p>
             <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-              📞 Call Support: 1234567890
+              📞 Call Support: 1800-180-1551 (Kisan Call Center)
             </Button>
           </CardContent>
         </Card>
