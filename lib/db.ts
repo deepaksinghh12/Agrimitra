@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+/**
+ * Global Mongoose Connection Cache
+ * 
+ * Next.js runs in a serverless environment where new instances are spun up frequently.
+ * To prevent exhausting database connections, we use a global cache to reuse
+ * the connection across hot reloads and lambda invocations.
+ */
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
 interface MongooseCache {
