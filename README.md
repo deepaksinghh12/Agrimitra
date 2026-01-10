@@ -42,6 +42,23 @@ This project is built with a modern, full-stack technology set:
 * [MongoDB](https://www.mongodb.com/)
 * [NextAuth.js](https://next-auth.js.org/)
 
+## Project Structure
+
+```
+project-kisan-main/
+├── app/                        # Next.js App Router (Pages & API)
+│   ├── api/                    # Backend API Routes
+│   │   └── mandi/              # Mandi Prices API (Agmarknet)
+│   ├── market/                 # Market Prices Feature
+│   ├── schemes/                # Government Schemes Feature
+│   └── ...
+├── lib/                        # Utilities & Data
+│   ├── data/                   # Static Data Assets
+│   ├── translations.ts         # Multi-language Dictionary
+│   └── db.ts                   # MongoDB Connection Cache
+└── components/                 # React Components
+```
+
 ---
 
 ## Getting Started
