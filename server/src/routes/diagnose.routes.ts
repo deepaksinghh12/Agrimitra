@@ -86,8 +86,8 @@ router.post('/', upload.single('image'), async (req: express.Request, res: expre
                 // No, safer to just try it and catch error.
             } catch (e) { }
 
-            console.log("Trying Gemini 1.5 Pro...");
-            text = await runGemini("gemini-1.5-pro", base64Image, mimeType);
+            console.log("Trying Gemini 1.5 Flash (Fallback)...");
+            text = await runGemini("gemini-1.5-flash", base64Image, mimeType);
         } catch (error) {
             console.error("Gemini 1.5 Pro failed:", error);
             throw error;
