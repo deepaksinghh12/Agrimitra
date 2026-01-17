@@ -35,83 +35,23 @@ router.post('/', upload.single('image'), async (req: express.Request, res: expre
             res.json(mlResponse.data);
             return;
         } catch (mlError: any) {
-            console.warn("ML Service failed, falling back to Gemini:", mlError.message);
-            if (mlError.response) {
-                console.error("ML Service Error Details:", mlError.response.data);
-            }
-            // Continue to Gemini fallback
-        }
+            // If ML Service fails, we stop here (User requested to remove Gemini fallback)
+            console.warn("ML Service failed, and Gemini fallback is disabled.");
 
-        // 2. Fallback to Gemini
-        // 2. Fallback to Gemini
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
-        async function runGemini(modelName: string, base64Image: string, mimeType: string) {
-            const model = genAI.getGenerativeModel({ model: modelName });
-            const prompt = `Analyze this plant image for diseases. 
-            Return ONLY a valid JSON object (no markdown, no backticks) with this structure:
-            {
-            "class": "Name of disease or 'Healthy'",
-            "confidence": 0.85, 
-            "recommendation": "Brief description and treatment"
-            }`;
-
-            const result = await model.generateContent([
-                prompt,
-                {
-                    inlineData: {
-                        data: base64Image,
-                        mimeType: mimeType,
-                    },
-                },
-            ]);
-            return result.response.text();
-        }
-
-        const imagePath = req.file.path;
-        const modelData = fs.readFileSync(imagePath);
-        const base64Image = modelData.toString('base64');
-        const mimeType = req.file.mimetype;
-
-        let text = "";
-        try {
-            // VERIFICATION STEP: List models to confirm API key and model availability
-            // Note: This might fail if listModels is not available on this instance, wrapping in try/catch to be safe
-            try {
-                // @ts-ignore - bypassing potential type check for debugging
-                const modelList = await genAI.getGenerativeModel({ model: 'gemini-1.5-pro' }).getGenerativeModelFactory?.()?.listModels?.()
-                    || "listModels not directly available, checking docs";
-                // The user requested: console.log(await genAI.listModels());
-                // I will try to follow the SDK structure if possible, but let's try the user's snippet blindly first if valid?
-                // No, safer to just try it and catch error.
-            } catch (e) { }
-
-            console.log("Trying Gemini Pro (Legacy)...");
-            text = await runGemini("gemini-pro", base64Image, mimeType);
-        } catch (error) {
-            console.error("All AI Models failed:", error);
-            // FAILOVER: Return a safe "Unable to Diagnose" response instead of crashing
             res.json({
-                class: "Diagnosis Unavailable (Server Busy)",
+                class: "ML Service Connecting...",
                 confidence: 0,
-                recommendation: "Our AI servers are currently experiencing high traffic or maintenance. Please try again later.",
-                error: "AI Service Unavailable" // Client can decide to show this or not
+                recommendation: "The AI Model is waking up. Please wait 30 seconds and try again.",
+                error: "ML Service Cold Start"
             });
             return;
         }
 
-        // Clean up
-        fs.unlinkSync(imagePath);
-
-        const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-
-        try {
-            const jsonResponse = JSON.parse(cleanText);
-            res.json(jsonResponse);
-        } catch (e) {
-            console.error("Gemini JSON Parse Error", e);
-            res.json({ class: "Unknown", confidence: 0, recommendation: cleanText });
-        }
+        // Gemini Logic Removed as per request
+        /* 
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+        ...
+        */
 
     } catch (error) {
         console.error("Diagnosis Error:", error);
