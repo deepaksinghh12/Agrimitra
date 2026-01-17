@@ -86,11 +86,18 @@ router.post('/', upload.single('image'), async (req: express.Request, res: expre
                 // No, safer to just try it and catch error.
             } catch (e) { }
 
-            console.log("Trying Gemini 1.5 Flash (Fallback)...");
-            text = await runGemini("gemini-1.5-flash", base64Image, mimeType);
+            console.log("Trying Gemini Pro (Legacy)...");
+            text = await runGemini("gemini-pro", base64Image, mimeType);
         } catch (error) {
-            console.error("Gemini 1.5 Pro failed:", error);
-            throw error;
+            console.error("All AI Models failed:", error);
+            // FAILOVER: Return a safe "Unable to Diagnose" response instead of crashing
+            res.json({
+                class: "Diagnosis Unavailable (Server Busy)",
+                confidence: 0,
+                recommendation: "Our AI servers are currently experiencing high traffic or maintenance. Please try again later.",
+                error: "AI Service Unavailable" // Client can decide to show this or not
+            });
+            return;
         }
 
         // Clean up
@@ -111,6 +118,7 @@ router.post('/', upload.single('image'), async (req: express.Request, res: expre
         if (req.file && fs.existsSync(req.file.path)) {
             fs.unlinkSync(req.file.path);
         }
+        // Even here, try to return JSON instead of 500 if possible, but 500 is technically correct for unexpected crash
         res.status(500).json({
             error: "Internal Server Error",
             details: error instanceof Error ? error.message : String(error)
