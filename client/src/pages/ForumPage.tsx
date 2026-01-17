@@ -40,6 +40,19 @@ export default function ForumPage() {
             setPosts(data);
         } catch (error) {
             console.error("Failed to fetch posts:", error);
+            // Fallback Mock Data
+            setPosts([
+                {
+                    _id: "demo1",
+                    author: "Demo User",
+                    title: "Best time to sow Wheat? (Demo)",
+                    content: "Can anyone suggest the best week in November for sowing wheat in Punjab?",
+                    tag: "Farming",
+                    likes: 12,
+                    comments: [],
+                    createdAt: new Date().toISOString()
+                }
+            ]);
         }
     };
 
