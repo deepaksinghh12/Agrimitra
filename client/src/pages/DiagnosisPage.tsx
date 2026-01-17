@@ -232,6 +232,12 @@ export default function DiagnosisPage() {
                         </Button>
                     </div>
                 )}
+                {/* DEBUG INFO - REMOVE BEFORE FINAL RELEASE */}
+                <div className="text-center p-4 text-xs text-gray-400 border-t border-gray-200 mt-8">
+                    <p>Debug Mode</p>
+                    <p>API URL: {import.meta.env.VITE_API_URL || "Not Set (Using Localhost)"}</p>
+                    {error && <p className="text-red-400">Last Error: {error}</p>}
+                </div>
             </div>
         </div>
     )
