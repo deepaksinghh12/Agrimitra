@@ -19,6 +19,13 @@ export default function DiagnosisPage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
     const [result, setResult] = useState<DiagnosisResult | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [debugError, setDebugError] = useState<string | null>(null)
+
+    // Helper to get sanitized URL
+    const getApiUrl = () => {
+        const raw = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        return raw.replace(/\/$/, '');
+    }
 
     const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -35,13 +42,14 @@ export default function DiagnosisPage() {
 
     const analyzeImage = async (file: File) => {
         setError(null)
+        setDebugError(null)
         const formData = new FormData()
         formData.append("image", file)
 
+        const API_URL = getApiUrl();
+
         try {
             // Connect to the Express Server (Proxy)
-            const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-            const API_URL = rawUrl.replace(/\/$/, '');
             const response = await fetch(`${API_URL}/api/diagnose`, {
                 method: "POST",
                 body: formData,
@@ -68,6 +76,7 @@ export default function DiagnosisPage() {
             setStep("result")
         } catch (err: any) {
             console.error("API Error (likely Vercel/Mixed Content or Server Offline):", err)
+            setDebugError(err.message || String(err));
 
             // FALLBACK / DEMO MODE for Vercel Showcase
             console.log("Activating Demo Mode...");
@@ -91,6 +100,7 @@ export default function DiagnosisPage() {
         setSelectedImage(null)
         setResult(null)
         setError(null)
+        setDebugError(null)
     }
 
     return (
@@ -233,11 +243,19 @@ export default function DiagnosisPage() {
                         </Button>
                     </div>
                 )}
+
                 {/* DEBUG INFO - REMOVE BEFORE FINAL RELEASE */}
                 <div className="text-center p-4 text-xs text-gray-400 border-t border-gray-200 mt-8">
-                    <p>Debug Mode</p>
-                    <p>API URL: {import.meta.env.VITE_API_URL || "Not Set (Using Localhost)"}</p>
-                    {error && <p className="text-red-400">Last Error: {error}</p>}
+                    <p className="font-bold">SUPER DEBUGGER 2.0</p>
+                    <p>Sanitized API URL: <span className="text-blue-500">{getApiUrl()}</span></p>
+                    <p>Raw Env: {import.meta.env.VITE_API_URL}</p>
+                    {debugError ? (
+                        <p className="text-red-500 font-bold mt-2">
+                            CRITICAL ERROR: {debugError}
+                        </p>
+                    ) : (
+                        <p className="text-green-500">No Errors Captured</p>
+                    )}
                 </div>
             </div>
         </div>
