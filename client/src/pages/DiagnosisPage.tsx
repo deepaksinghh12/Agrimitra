@@ -40,7 +40,8 @@ export default function DiagnosisPage() {
 
         try {
             // Connect to the Express Server (Proxy)
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const API_URL = rawUrl.replace(/\/$/, '');
             const response = await fetch(`${API_URL}/api/diagnose`, {
                 method: "POST",
                 body: formData,

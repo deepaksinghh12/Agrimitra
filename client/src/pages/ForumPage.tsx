@@ -35,7 +35,8 @@ export default function ForumPage() {
     // Fetch posts from backend
     const fetchPosts = async () => {
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const API_URL = rawUrl.replace(/\/$/, '');
             const res = await fetch(`${API_URL}/api/forum`);
             const data = await res.json();
             setPosts(data);
@@ -63,7 +64,8 @@ export default function ForumPage() {
 
     const handleLike = async (id: string) => {
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const API_URL = rawUrl.replace(/\/$/, '');
             await fetch(`${API_URL}/api/forum/${id}/like`, { method: "POST" });
             fetchPosts(); // Refresh
         } catch (error) {
@@ -75,7 +77,8 @@ export default function ForumPage() {
         if (!newPostTitle.trim() || !newPostContent.trim()) return;
 
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const API_URL = rawUrl.replace(/\/$/, '');
             await fetch(`${API_URL}/api/forum`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
