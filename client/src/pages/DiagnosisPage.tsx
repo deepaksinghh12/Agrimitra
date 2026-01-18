@@ -19,7 +19,7 @@ export default function DiagnosisPage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null)
     const [result, setResult] = useState<DiagnosisResult | null>(null)
     const [error, setError] = useState<string | null>(null)
-    const [debugError, setDebugError] = useState<string | null>(null)
+
 
     // Helper to get sanitized URL
     const getApiUrl = () => {
@@ -42,7 +42,7 @@ export default function DiagnosisPage() {
 
     const analyzeImage = async (file: File) => {
         setError(null)
-        setDebugError(null)
+
         const formData = new FormData()
         formData.append("image", file)
 
@@ -76,7 +76,7 @@ export default function DiagnosisPage() {
             setStep("result")
         } catch (err: any) {
             console.error("API Error (likely Vercel/Mixed Content or Server Offline):", err)
-            setDebugError(err.message || String(err));
+
 
             // FALLBACK / DEMO MODE for Vercel Showcase
             console.log("Activating Demo Mode...");
@@ -100,7 +100,7 @@ export default function DiagnosisPage() {
         setSelectedImage(null)
         setResult(null)
         setError(null)
-        setDebugError(null)
+
     }
 
     return (
@@ -244,19 +244,7 @@ export default function DiagnosisPage() {
                     </div>
                 )}
 
-                {/* DEBUG INFO - REMOVE BEFORE FINAL RELEASE */}
-                <div className="text-center p-4 text-xs text-gray-400 border-t border-gray-200 mt-8">
-                    <p className="font-bold">SUPER DEBUGGER 2.0</p>
-                    <p>Sanitized API URL: <span className="text-blue-500">{getApiUrl()}</span></p>
-                    <p>Raw Env: {import.meta.env.VITE_API_URL}</p>
-                    {debugError ? (
-                        <p className="text-red-500 font-bold mt-2">
-                            CRITICAL ERROR: {debugError}
-                        </p>
-                    ) : (
-                        <p className="text-green-500">No Errors Captured</p>
-                    )}
-                </div>
+
             </div>
         </div>
     )
