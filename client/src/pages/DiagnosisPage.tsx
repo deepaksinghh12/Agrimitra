@@ -75,23 +75,9 @@ export default function DiagnosisPage() {
             })
             setStep("result")
         } catch (err: any) {
-            console.error("API Error (likely Vercel/Mixed Content or Server Offline):", err)
-
-
-            // FALLBACK / DEMO MODE for Vercel Showcase
-            console.log("Activating Demo Mode...");
-            setTimeout(() => {
-                setResult({
-                    disease: "Leaf Rust (Demo)",
-                    confidence: 94,
-                    severity: "Medium",
-                    description: "Note: Backend is offline (Vercel Demo). This is a simulated result. Leaf rust is a fungal disease that attacks the leaves of wheat, barley, and rye.",
-                    symptoms: ["Small orange/brown pustules", "Leaves turning yellow"],
-                    remedies: ["Use fungicides like Mancozeb", "Plant resistant varieties"]
-                })
-                setStep("result")
-                setError(null) // Clear error to show result
-            }, 1500)
+            console.error(err)
+            setError(err.message || "Failed to analyze image. Please try again.")
+            setStep("upload")
         }
     }
 
