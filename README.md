@@ -1,99 +1,89 @@
-# KisanMitra AI 🌾
+# AgriMitra 🌾
 
-An intelligent web application providing farmers with AI-powered tools for crop management, disease detection, and market insights.
+An intelligent web application providing farmers with AI-powered tools for crop management, disease detection, and market insights. **Powered by MERN Stack & Python AI.**
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Build Status](https://img.shields.io/badge/build-verified-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 
 ---
 
 ## About The Project
 
-KisanMitra AI (Hindi for "Farmer's Friend AI") is a comprehensive, AI-powered platform built to address the everyday challenges faced by modern farmers. By combining machine learning with essential agricultural data, this application serves as a one-stop digital assistant for farming operations.
-
-From selecting the right crop for their soil to identifying diseases before they spread and getting fair market prices, KisanMitra AI aims to bridge the information gap and bring the power of technology to the agricultural sector.
-
-
+AgriMitra is a comprehensive, AI-powered platform built to address the everyday challenges faced by modern farmers. By combining machine learning with essential agricultural data, this application serves as a one-stop digital assistant for farming operations.
 
 ---
 
 ### Key Features
 
-* **📅 AI Smart Calendar:** Generates personalized week-by-week farming schedules (fertilizer, irrigation) for any crop using Gemini AI.
-* **📸 Visual AI Assistant:** A multimodal chatbot (Voice + Text + Image) that can analyze plant images, answer farming queries, and speak back in local languages.
-* **👥 Kisan Forum:** A community space for farmers to share tips, ask questions, and interact with peers.
-* **🌿 Plant Diagnosis:** Instantly identifies crop diseases from photos and provides treatment solutions.
-* **☀️ Weather Dashboard:** Real-time temperature, humidity, and 5-day forecasts for any Indian city.
-* **📈 Market Insights:** Track mandi prices and trends for various crops.
-* **🗣️ Bilingual Support:** Fully localized interface in English and Hindi (हिंदी).
+*   **📅 AI Smart Calendar:** Generates personalized week-by-week farming schedules.
+*   **📸 Visual AI Assistant:** A multimodal chatbot (Voice + Text + Image) that can analyze plant images and answer farming queries.
+*   **👥 Kisan Forum:** A community space for farmers to share tips, ask questions, and interact with peers.
+*   **🌿 Plant Diagnosis:** Instantly identifies crop diseases from photos using MobileNetV2 (Python ML Service) with Gemini AI Fallback.
+*   **☀️ Weather Dashboard:** Real-time temperature, humidity, and 5-day forecasts.
+*   **📈 Market Insights:** Track mandi prices and trends for various crops.
+*   **🗣️ Bilingual Support:** Fully localized interface in English, Hindi (हिंदी), and Gujarati.
 
 ---
 
 ### Built With
 
-This project is built with a modern, full-stack technology set:
+This project is built with a modern, full-stack technology set (**MERN**):
 
-* [Next.js](https://nextjs.org/)
-* [React](https://reactjs.org/)
-* [TypeScript](https://www.typescriptlang.org/)
-* [Tailwind CSS](https://tailwindcss.com/)
-* [MongoDB](https://www.mongodb.com/)
-* [NextAuth.js](https://next-auth.js.org/)
+*   [React](https://reactjs.org/) (Vite)
+*   [Node.js](https://nodejs.org/) & [Express.js](https://expressjs.com/)
+*   [MongoDB](https://www.mongodb.com/)
+*   [Python](https://www.python.org/) & [FastAPI](https://fastapi.tiangolo.com/) (ML Service)
+*   [Tailwind CSS](https://tailwindcss.com/)
 
 ## Project Structure
 
 ```
-project-kisan-main/
-├── app/                        # Next.js App Router (Pages & API)
-│   ├── api/                    # Backend API Routes
-│   │   └── mandi/              # Mandi Prices API (Agmarknet)
-│   ├── market/                 # Market Prices Feature
-│   ├── schemes/                # Government Schemes Feature
-│   └── ...
-├── lib/                        # Utilities & Data
-│   ├── data/                   # Static Data Assets
-│   ├── translations.ts         # Multi-language Dictionary
-│   └── db.ts                   # MongoDB Connection Cache
-└── components/                 # React Components
+AgriMitra/
+├── client/                     # Frontend (React + Vite)
+│   ├── src/
+│   │   ├── pages/              # Application Pages
+│   │   ├── components/         # Reusable UI Components
+│   │   └── ...
+├── server/                     # Backend (Node.js + Express)
+│   ├── src/
+│   │   ├── models/             # Mongoose Models
+│   │   ├── routes/             # API Routes
+│   │   └── ...
+└── ml-service/                 # AI Service (Python + FastAPI)
+    ├── main.py                 # ML Entry Point
+    └── ...
 ```
 
 ---
 
 ## Getting Started
 
-To get a local copy up and running, follow these simple steps.
-
 ### Prerequisites
-
-Make sure you have Node.js and npm installed on your machine.
-* npm
-    ```sh
-    npm install npm@latest -g
-    ```
+*   Node.js (v18+)
+*   Python (v3.10+)
+*   MongoDB
 
 ### Installation
 
 1.  **Clone the repository**
     ```sh
-    git clone 
+    git clone https://github.com/deepaksinghh12/Agrimitra.git
+    cd AgriMitra
     ```
-2.  **Navigate to the project directory**
-    ```sh
-    cd project-kisan
-    ```
-3.  **Install NPM packages**
-    ```sh
-    npm install
-    ```
-4.  **Set up your Environment Variables**
-    * Create a file named `.env` in the root of your project.
-    * Copy the contents from `.env.example` (or the block below) into your new `.env` file.
-    ```env
-5.  **Run the development server**
-    ```sh
-    npm run dev
-    ```
-    Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+2.  **Install Dependencies**
+    *   **Frontend**: `cd client && npm install`
+    *   **Backend**: `cd server && npm install`
+    *   **ML Service**: `cd ml-service && pip install -r requirements.txt`
+
+3.  **Run the Application**
+    *   **Backend**: `cd server && npm run dev` (Runs on port 5000)
+    *   **ML Service**: `cd ml-service && uvicorn main:app --reload` (Runs on port 8000)
+    *   **Frontend**: `cd client && npm run dev` (Runs on port 5173)
+
+open [http://localhost:5173](http://localhost:5173) to view it in the browser.
 
