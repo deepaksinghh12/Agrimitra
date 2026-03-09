@@ -27,6 +27,7 @@ router.post('/', upload.single('image'), async (req: express.Request, res: expre
                 headers: {
                     ...formData.getHeaders(),
                 },
+                timeout: 100000,
             });
 
             // Clean up uploaded file
