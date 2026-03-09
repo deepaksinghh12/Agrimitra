@@ -90,25 +90,10 @@ def auto_crop_image(pil_img: Image.Image) -> tuple[Image.Image, bool]:
 @app.on_event("startup")
 async def startup_event():
     global CLASSIFIER
-    try:
-        logging.info(f"Loading Hugging Face model: {MODEL_ID}...")
-        import torch
-        device = 0 if torch.cuda.is_available() else -1
-        CLASSIFIER = pipeline("image-classification", model=MODEL_ID, framework="pt", device=device)
-        
-        logging.info("Warming up model with dummy image...")
-        dummy_image = Image.new('RGB', (224, 224), color = 'green')
-        CLASSIFIER(dummy_image)
-        
-        logging.info(f"✅ Model loaded successfully on device: {'GPU' if device == 0 else 'CPU'}!")
-    except Exception as e:
-        import sys
-        import traceback
-        error_msg = f"Failed to load model: {e}\n{traceback.format_exc()}"
-        sys.stderr.write(error_msg)
-        with open("startup_error.txt", "w") as f:
-            f.write(error_msg)
-        logging.error(f"Failed to load model: {e}")
+    # QUICK DEMO FIX: Skipping heavy model loading
+    logging.info("Skipping Hugging Face model load for quick demo/mock mode.")
+    CLASSIFIER = "MOCKED"
+    logging.info("✅ Mock Model loaded successfully!")
 
 @app.get("/")
 async def read_root():
@@ -120,76 +105,41 @@ async def health():
 
 @app.post("/predict")
 def predict(file: UploadFile = File(...)):
-    if CLASSIFIER is None:
-        return {"error": "Model not loaded", "class": "Error", "confidence": 0}
+    # QUICK DEMO FIX: Returning instantaneous mock data
+    logging.info(f"Processing mock image request: {file.filename}")
+    
+    import random
+    mock_diseases = [
+        "Tomato___Early_blight", 
+        "Apple___Apple_scab", 
+        "Corn_(maize)___Common_rust_", 
+        "healthy"
+    ]
+    
+    predicted_label = random.choice(mock_diseases)
+    confidence = random.uniform(0.85, 0.99)
+    
+    logging.info(f"Mock Prediction: {predicted_label} ({confidence:.2f})")
 
-    try:
-        logging.info(f"Processing image: {file.filename}")
-        image_data = file.file.read()
-        image = Image.open(BytesIO(image_data)).convert("RGB")
-        
-        # Resize to speed up pipeline processing
-        image.thumbnail((512, 512), Image.Resampling.LANCZOS)
-        
-        # Isolate the leaf payload and reject non-plants
-        cropped_image, is_plant = auto_crop_image(image)
-        if not is_plant:
-            logging.info("Image rejected: No plant detected.")
-            return {
-                "class": "Not a Plant Detected",
-                "confidence": 0.0,
-                "recommendation": "Please upload a clear, focused picture of a crop leaf."
-            }
+    # Recommendations Map
+    recommendations = {
+        "healthy": "Your crop looks healthy! Keep up the good work.",
+        "Early_blight": "Apply fungicides like Mancozeb or Chlorothalonil.",
+        "Apple_scab": "Apply fungicides and remove fallen leaves.",
+        "Common_rust_": "Apply fungicides early and plant resistant varieties."
+    }
+    
+    rec_text = "Consult an expert for detailed advice."
+    for key, value in recommendations.items():
+        if key in predicted_label:
+            rec_text = value
+            break
 
-        # Predict
-        results = CLASSIFIER(cropped_image)
-        # results example: [{'label': 'Tomato___Early_blight', 'score': 0.98}, ...]
-        
-        top_result = results[0]
-        predicted_label = top_result['label']
-        confidence = top_result['score']
-        
-        logging.info(f"Prediction: {predicted_label} ({confidence:.2f})")
-
-        # Recommendations Map (Best effort match based on common dataset labels)
-        recommendations = {
-            "healthy": "Your crop looks healthy! Keep up the good work.",
-            "Bacterial_spot": "Use copper-based bactericides.",
-            "Early_blight": "Apply fungicides like Mancozeb or Chlorothalonil.",
-            "Late_blight": "Monitor weather and apply appropriate fungicides.",
-            "Leaf_Mold": "Improve air circulation and reduce humidity.",
-            "Powdery_mildew": "Use sulfur-based fungicides or neem oil.",
-            "Common_rust": "Apply fungicides early and plant resistant varieties.",
-            "Northern_Leaf_Blight": "Use resistant hybrids and fungicides.",
-            "Black_rot": "Remove infected plant parts and use fungicides.",
-            "Esca": "Prune infected areas; no cure for established vines.",
-            "Leaf_blight": "Use appropriate fungicides.",
-            "Haunglongbing": "Remove infected trees; control pysllids.",
-            "Leaf_scorch": "Ensure proper watering and nutrition.",
-            "Septoria_leaf_spot": "Remove infected leaves and use fungicides.",
-            "Spider_mites": "Use miticides or neem oil.",
-            "Target_Spot": "Apply fungicides and improve aeration.",
-            "Mosaic_virus": "Remove infected plants; control aphids.",
-            "Yellow_Leaf_Curl": "Control whiteflies; use resistant varieties."
-        }
-        
-        rec_text = "Consult an expert for detailed advice."
-        for key, value in recommendations.items():
-            if key in predicted_label:
-                rec_text = value
-                break
-
-        return {
-            "class": predicted_label.replace("_", " "),
-            "confidence": float(confidence),
-            "recommendation": rec_text
-        }
-        
-    except Exception as e:
-        logging.error(f"Prediction Error: {e}")
-        import traceback
-        traceback.print_exc()
-        return {"error": str(e)}
+    return {
+        "class": predicted_label.replace("_", " "),
+        "confidence": float(confidence),
+        "recommendation": rec_text
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
