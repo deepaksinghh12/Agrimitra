@@ -27,7 +27,6 @@ router.post('/', upload.single('image'), async (req: express.Request, res: expre
                 headers: {
                     ...formData.getHeaders(),
                 },
-                timeout: 100000,
             });
 
             // Clean up uploaded file
@@ -36,30 +35,21 @@ router.post('/', upload.single('image'), async (req: express.Request, res: expre
             res.json(mlResponse.data);
             return;
         } catch (mlError: any) {
-            // If ML Service fails, we stop here (User requested to remove Gemini fallback)
-            console.warn("ML Service failed, and Gemini fallback is disabled.");
-
-            res.json({
-                class: "ML Service Connecting...",
-                confidence: 0,
-                recommendation: "The AI Model is waking up. Please wait 30 seconds and try again.",
-                error: "ML Service Cold Start"
-            });
-            return;
+            console.warn("ML Service failed, falling back to Gemini:", mlError.message);
+            if (mlError.response) {
+                console.error("ML Service Error Details:", mlError.response.data);
+            }
+            // Continue to Gemini fallback
         }
 
+        // 2. Fallback to Gemini
         // Gemini Logic Removed as per request
-        /* 
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-        ...
-        */
 
     } catch (error) {
         console.error("Diagnosis Error:", error);
         if (req.file && fs.existsSync(req.file.path)) {
             fs.unlinkSync(req.file.path);
         }
-        // Even here, try to return JSON instead of 500 if possible, but 500 is technically correct for unexpected crash
         res.status(500).json({
             error: "Internal Server Error",
             details: error instanceof Error ? error.message : String(error)

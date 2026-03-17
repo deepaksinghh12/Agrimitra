@@ -28,10 +28,9 @@ export default function MarketPage() {
         setError(null)
         setMarketSummary(null)
         try {
-            // Defaulting to Rajasthan for now as per original code context, could be dynamic later
-            const rawUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-            const API_URL = rawUrl.replace(/\/$/, '');
-            const response = await fetch(`${API_URL}/api/market?state=Rajasthan&commodity=${commodity}`)
+            // Defaulting to Gujarat for now as per user request
+            const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+            const response = await fetch(`${API_URL}/api/market?state=Gujarat&commodity=${commodity}`)
             const data = await response.json()
 
             if (response.ok) {
@@ -42,14 +41,7 @@ export default function MarketPage() {
                 setMarketData([])
             }
         } catch (err) {
-            console.error("Market API Error:", err)
-            // Fallback Mock Data for Demo
-            setMarketData([
-                { district: "Jaipur (Demo)", market_name: "Kisan Mandi", modal_price: 2450, arrival_date: "17/01/2026" },
-                { district: "Kota (Demo)", market_name: "Main Mandi", modal_price: 2480, arrival_date: "17/01/2026" },
-            ])
-            setMarketSummary("Market is bullish. Prices are up by 2% compared to last week.")
-            setError(null)
+            setError("Network error. Please try again.")
         } finally {
             setLoading(false)
         }
@@ -151,7 +143,7 @@ export default function MarketPage() {
                 {/* Loading / Error / Data */}
                 <div className="space-y-3">
                     <h3 className="font-semibold text-green-700 flex items-center gap-2">
-                        📈 Live Prices (Rajasthan)
+                        📈 Live Prices (Gujarat)
                         {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                     </h3>
 

@@ -8,7 +8,7 @@ import { ArrowLeft, CloudRain, Sun, Wind, Droplets, MapPin, Loader2, Search } fr
 export default function WeatherPage() {
     const [loading, setLoading] = useState(false)
     const [weather, setWeather] = useState<any>(null)
-    const [city, setCity] = useState("New Delhi")
+    const [city, setCity] = useState("Ahmedabad")
     const [language, setLanguage] = useState<"en" | "gu">("en")
 
     const fetchWeather = async () => {
@@ -92,7 +92,7 @@ export default function WeatherPage() {
                     <Input
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        placeholder="Enter city (e.g., Pune)"
+                        placeholder="Enter city (e.g., Surat)"
                         className="bg-white"
                     />
                     <Button onClick={fetchWeather} className="bg-green-600 hover:bg-green-700">

@@ -23,7 +23,7 @@ export default function SchemesPage() {
     const [isListening, setIsListening] = useState(false)
     const [query, setQuery] = useState("")
     const [openSchemes, setOpenSchemes] = useState<string[]>([])
-    const [userState] = useState("Rajasthan") // Default state
+    const [userState] = useState("Gujarat") // Default state
 
     // Combine Schemes from JSON
     const nationalSchemes = schemesData.national_schemes.map((s, i) => ({ ...s, id: `nat-${i}`, type: 'National' }))

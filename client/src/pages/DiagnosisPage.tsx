@@ -20,7 +20,6 @@ export default function DiagnosisPage() {
     const [result, setResult] = useState<DiagnosisResult | null>(null)
     const [error, setError] = useState<string | null>(null)
 
-
     // Helper to get sanitized URL
     const getApiUrl = () => {
         const raw = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -42,13 +41,11 @@ export default function DiagnosisPage() {
 
     const analyzeImage = async (file: File) => {
         setError(null)
-
         const formData = new FormData()
         formData.append("image", file)
 
-        const API_URL = getApiUrl();
-
         try {
+            const API_URL = getApiUrl();
             // Connect to the Express Server (Proxy)
             const response = await fetch(`${API_URL}/api/diagnose`, {
                 method: "POST",
@@ -75,9 +72,9 @@ export default function DiagnosisPage() {
             })
             setStep("result")
         } catch (err: any) {
-            console.error(err)
-            setError(err.message || "Failed to analyze image. Please try again.")
-            setStep("upload")
+            console.error("Diagnosis Error:", err)
+            setError(err.message || "Failed to connect to Diagnosis Server. Please try again later.")
+            setStep("upload") // Return to upload screen so they can see the error
         }
     }
 
@@ -86,7 +83,6 @@ export default function DiagnosisPage() {
         setSelectedImage(null)
         setResult(null)
         setError(null)
-
     }
 
     return (
@@ -229,8 +225,6 @@ export default function DiagnosisPage() {
                         </Button>
                     </div>
                 )}
-
-
             </div>
         </div>
     )

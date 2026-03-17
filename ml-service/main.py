@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import logging
 from PIL import Image
-from PIL import Image
 from io import BytesIO
 from transformers import pipeline
 import cv2
@@ -30,10 +29,7 @@ CLASSIFIER = None
 MODEL_ID = "linkanjarad/mobilenet_v2_1.0_224-plant-disease-identification"
 
 def auto_crop_image(pil_img: Image.Image) -> tuple[Image.Image, bool]:
-    """
-    Intelligently slices off excessive background noise around a dominant leaf using HSV color bounding and contours.
-    Returns: (Cropped_Image or Original, is_plant_detected boolean)
-    """
+    """Intelligently slices off excessive background noise around a dominant leaf using HSV color bounding and contours."""
     try:
         # Convert PIL to specific OpenCV format
         open_cv_image = np.array(pil_img)
@@ -64,14 +60,14 @@ def auto_crop_image(pil_img: Image.Image) -> tuple[Image.Image, bool]:
         contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         
         if not contours:
-            return (pil_img, False) # No plant contour detected
+            return (pil_img, False) # Fallback: No plant detected, return original
 
         # Find the largest contour (assuming it's the primary leaf)
         largest_contour = max(contours, key=cv2.contourArea)
         
         # Ignore if the detected blob is incredibly small and likely noise
         if cv2.contourArea(largest_contour) < 500:
-            return (pil_img, False)
+            return (pil_img, False) # Ignore if the detected blob is incredibly small and likely noise
             
         # Get bounding box coordinates padding slightly
         x, y, w, h = cv2.boundingRect(largest_contour)
@@ -84,8 +80,8 @@ def auto_crop_image(pil_img: Image.Image) -> tuple[Image.Image, bool]:
         return (Image.fromarray(cropped_rgb), True)
         
     except Exception as e:
-        logging.warning(f"Auto-crop/filtering failed, falling back to original image: {e}")
-        return (pil_img, True)  # Fallback to leniency on error
+        logging.warning(f"Auto-crop failed, falling back to original image: {e}")
+        return (pil_img, True)
 
 @app.on_event("startup")
 async def startup_event():
@@ -104,9 +100,9 @@ async def health():
     return {"status": "ok", "model_loaded": CLASSIFIER is not None}
 
 @app.post("/predict")
-def predict(file: UploadFile = File(...)):
+async def predict(file: UploadFile = File(...)):
     # QUICK DEMO FIX: Returning instantaneous mock data
-    logging.info(f"Processing mock image request: {file.filename}")
+    logging.info(f"Processing mock image request for Agrimitra: {file.filename}")
     
     import random
     mock_diseases = [

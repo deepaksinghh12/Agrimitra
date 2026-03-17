@@ -1,9 +1,8 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Mic, TrendingUp, Settings } from "lucide-react"
+import { Mic, Settings } from "lucide-react"
 
 // Types
 type Language = "en" | "gu" | "hi";
@@ -24,7 +23,7 @@ const text = {
     online: "Online",
   },
   gu: {
-    title: "એગ્રી-મિત્ર",
+    title: "ફસલ કેર",
     subtitle: "તમારો AI ખેડૂત મિત્ર",
     cropDiagnosis: "પાક રોગ નિદાન",
     cropDesc: "છોડના રોગો ઓળખવા માટે ફોટો લો",
@@ -38,7 +37,7 @@ const text = {
     online: "ઓનલાઇન",
   },
   hi: {
-    title: "एग्री-मित्र",
+    title: "फसल केयर",
     subtitle: "आपका एआई खेती सहायक",
     cropDiagnosis: "फसल रोग निदान",
     cropDesc: "पौधों के रोगों की पहचान के लिए फोटो लें",
@@ -75,19 +74,16 @@ function HomePage() {
       {/* Header */}
       <div className="bg-green-600 text-white p-4 shadow-lg sticky top-0 z-50">
         <div className="flex items-center justify-between max-w-md mx-auto">
-          <div>
-            <h1 className="text-xl font-bold">🧑‍🌾 {text[language].title}</h1>
-            <p className="text-green-100 text-sm">{text[language].subtitle}</p>
+          <div className="flex items-center gap-3 w-3/4">
+            <div className="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center flex-shrink-0 overflow-hidden border border-white">
+              <img src="/logo.jpg" alt="Logo" className="w-full h-full object-cover scale-105" />
+            </div>
+            <div className="flex flex-col justify-center">
+              <h1 className="text-xl font-bold leading-none mb-1">{text[language].title}</h1>
+              <p className="text-green-100 text-xs leading-none">{text[language].subtitle}</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            {/* Subscription Icon */}
-            <Button variant="ghost" size="icon" className="text-yellow-300 hover:text-yellow-100 hover:bg-white/10">
-              <div className="relative">
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping" />
-                <span className="text-xl">👑</span>
-              </div>
-            </Button>
-
             <Button
               variant="ghost"
               size="sm"
@@ -107,7 +103,48 @@ function HomePage() {
 
       {/* Main Content */}
       <div className="p-4 max-w-md mx-auto space-y-4 pb-20">
-        {/* HERO: Crop Diagnosis (Replaces Voice) */}
+        {/* Top Quick Actions Row */}
+        <div className="grid grid-cols-4 gap-2">
+          {/* Weather */}
+          <Link to="/weather" className="flex flex-col items-center gap-1 group">
+            <div className="w-14 h-14 bg-white rounded-2xl shadow-sm border border-blue-100 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform group-hover:shadow-md">
+              🌦️
+            </div>
+            <span className="text-[10px] font-semibold text-gray-700 text-center leading-tight">
+              {language === "en" ? "Weather" : (language === "hi" ? "मौसम" : "હવામાન")}
+            </span>
+          </Link>
+          {/* Store */}
+          <Link to="/shop" className="flex flex-col items-center gap-1 group">
+            <div className="w-14 h-14 bg-white rounded-2xl shadow-sm border border-emerald-100 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform group-hover:shadow-md">
+              🛒
+            </div>
+            <span className="text-[10px] font-semibold text-gray-700 text-center leading-tight">
+              {language === "en" ? "Store" : (language === "hi" ? "स्टोर" : "સ્ટોર")}
+            </span>
+          </Link>
+          {/* Drone */}
+          <div className="flex flex-col items-center gap-1 group opacity-80 cursor-not-allowed grayscale">
+            <div className="w-14 h-14 bg-white rounded-2xl shadow-sm border border-blue-100 flex items-center justify-center text-2xl relative">
+              🚁
+              <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-[8px] font-bold px-1 rounded-sm">SOON</div>
+            </div>
+            <span className="text-[10px] font-semibold text-gray-700 text-center leading-tight">
+              {language === "en" ? "Drone" : (language === "hi" ? "ड्रोन" : "ડ્રોન")}
+            </span>
+          </div>
+          {/* Pro */}
+          <Link to="/subscription" className="flex flex-col items-center gap-1 group">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl shadow-sm border border-purple-200 flex items-center justify-center text-2xl group-hover:scale-105 transition-transform group-hover:shadow-md relative">
+              👑
+            </div>
+            <span className="text-[10px] font-semibold text-gray-700 text-center leading-tight">
+              {language === "en" ? "Pro" : (language === "hi" ? "प्रो" : "પ્રો")}
+            </span>
+          </Link>
+        </div>
+
+        {/* HERO: Crop Diagnosis */}
         <Card className="bg-gradient-to-r from-green-600 to-emerald-700 text-white border-0 shadow-lg overflow-hidden relative">
           {/* Decorative Background Pattern */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
@@ -129,30 +166,16 @@ function HomePage() {
           </CardContent>
         </Card>
 
-        {/* Feature Cards Grid */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* Secondary Tools Row */}
+        <div className="grid grid-cols-3 gap-3">
           {/* Market Prices */}
           <Link to="/market" className="block col-span-1">
             <Card className="hover:shadow-lg transition-shadow border-green-200 hover:border-green-300 h-full">
-              <CardHeader className="p-4">
+              <CardHeader className="p-3">
                 <CardTitle className="flex flex-col items-center text-center gap-2 text-green-700">
                   <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">💰</div>
                   <div>
-                    <div className="font-semibold text-sm">{text[language].marketPrices}</div>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          </Link>
-
-          {/* Weather */}
-          <Link to="/weather" className="block col-span-1">
-            <Card className="hover:shadow-lg transition-shadow border-green-200 hover:border-green-300 h-full">
-              <CardHeader className="p-4">
-                <CardTitle className="flex flex-col items-center text-center gap-2 text-green-700">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl">🌦️</div>
-                  <div>
-                    <div className="font-semibold text-sm">{language === "en" ? "Weather" : (language === "hi" ? "मौसम" : "હવામાન")}</div>
+                    <div className="font-semibold text-xs leading-tight whitespace-pre-line">{language === "en" ? "Market\nPrices" : (language === "hi" ? "बाजार\nभाव" : "બજાર\nભાવ")}</div>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -162,11 +185,11 @@ function HomePage() {
           {/* Schemes */}
           <Link to="/schemes" className="block col-span-1">
             <Card className="hover:shadow-lg transition-shadow border-green-200 hover:border-green-300 h-full">
-              <CardHeader className="p-4">
+              <CardHeader className="p-3">
                 <CardTitle className="flex flex-col items-center text-center gap-2 text-green-700">
                   <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center text-xl">🧾</div>
                   <div>
-                    <div className="font-semibold text-sm">{language === "en" ? "Schemes" : (language === "hi" ? "योजनाएं" : "યોજનાઓ")}</div>
+                    <div className="font-semibold text-xs leading-tight">{language === "en" ? "Schemes" : (language === "hi" ? "योजनाएं" : "યોજનાઓ")}</div>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -176,11 +199,11 @@ function HomePage() {
           {/* Forum */}
           <Link to="/forum" className="block col-span-1">
             <Card className="hover:shadow-lg transition-shadow border-green-200 hover:border-green-300 h-full">
-              <CardHeader className="p-4">
+              <CardHeader className="p-3">
                 <CardTitle className="flex flex-col items-center text-center gap-2 text-green-700">
                   <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-xl">👥</div>
                   <div>
-                    <div className="font-semibold text-sm">{language === "en" ? "Forum" : (language === "hi" ? "मंच" : "ચર્ચા")}</div>
+                    <div className="font-semibold text-xs leading-tight">{language === "en" ? "Forum" : (language === "hi" ? "मंच" : "ચર્ચા")}</div>
                   </div>
                 </CardTitle>
               </CardHeader>
@@ -188,38 +211,56 @@ function HomePage() {
           </Link>
         </div>
 
-        {/* Teasers List */}
-        <div className="space-y-3">
-          {/* Drone Farming (Teaser) */}
-          <div className="block opacity-80 grayscale hover:grayscale-0 transition-all">
-            <Card className="border-blue-200 bg-blue-50/50">
-              <div className="p-3 flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center text-2xl">🚁</div>
-                <div>
-                  <div className="font-semibold flex items-center gap-2 text-blue-900">
-                    {language === "en" ? "Drone Services" : (language === "hi" ? "ड्रोन सेवाएं" : "ડ્રોન સેવા")}
-                    <Badge variant="secondary" className="text-[10px] bg-blue-200 text-blue-800">SOON</Badge>
+        {/* Top Agri News */}
+        <div className="mt-6 mb-2">
+          <h3 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+            📰 {language === "en" ? "Top Agri News" : (language === "hi" ? "शीर्ष कृषि समाचार" : "ટોચના કૃષિ સમાચાર")}
+          </h3>
+          <div className="space-y-3">
+            {[
+              {
+                id: 1,
+                title: language === "en" ? "Government announces new subsidy for solar pumps under PM-KUSUM" : (language === "hi" ? "सरकार ने पीएम-कुसुम के तहत सोलर पंपों के लिए नई सब्सिडी की घोषणा की" : "સરકારે PM-KUSUM અંતર્ગત સોલાર પંપ માટે નવી સબસિડીની જાહેરાત કરી"),
+                source: "AgriNews Today",
+                time: "2 hours ago",
+                img: "☀️",
+                color: "bg-orange-50"
+              },
+              {
+                id: 2,
+                title: language === "en" ? "Monsoon expected to arrive early this year in central farming regions" : (language === "hi" ? "मध्य कृषि क्षेत्रों में इस साल मानसून जल्दी आने की उम्मीद" : "આ વર્ષે મધ્ય ખેતી વિસ્તારોમાં ચોમાસું વહેલું આવવાની સંભાવના છે"),
+                source: "Weather Dept",
+                time: "5 hours ago",
+                img: "🌧️",
+                color: "bg-blue-50"
+              },
+              {
+                id: 3,
+                title: language === "en" ? "Wheat prices hitting record high in major mandis ahead of harvest season" : (language === "hi" ? "कटाई के मौसम से पहले प्रमुख मंडियों में गेहूं की कीमतें रिकॉर्ड ऊंचाई पर" : "લણણીની સિઝન પહેલા મોટી મંડીઓમાં ઘઉંના ભાવ રેકોર્ડ ઉંચાઈએ પહોંચ્યા"),
+                source: "Market Watch",
+                time: "1 day ago",
+                img: "🌾",
+                color: "bg-yellow-50"
+              }
+            ].map(news => (
+              <Card key={news.id} className="border border-green-100 hover:shadow-md transition-shadow cursor-pointer">
+                <div className="p-3 flex gap-4 items-center">
+                  <div className={`w-14 h-14 ${news.color} rounded-xl flex items-center justify-center text-3xl flex-shrink-0`}>
+                    {news.img}
                   </div>
-                  <div className="text-xs text-blue-700">Automated Spraying & Monitoring</div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-sm text-gray-800 line-clamp-2 leading-snug">{news.title}</h4>
+                    <div className="flex items-center gap-2 mt-1.5 text-[10px] text-gray-500 font-medium">
+                      <span className="text-green-600 bg-green-50 px-2 py-0.5 rounded-sm">{news.source}</span>
+                      <span>•</span>
+                      <span>{news.time}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          </div>
-
-          {/* Subscription (Teaser) */}
-          <div className="block">
-            <Card className="border-purple-200 bg-gradient-to-r from-purple-50 to-pink-50">
-              <div className="p-3 flex items-center gap-4">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center text-2xl">👑</div>
-                <div>
-                  <div className="font-semibold text-purple-900">{language === "en" ? "Upgrade to Pro" : (language === "hi" ? "प्रो में अपग्रेड करें" : "પ્રો પર અપગ્રેડ કરો")}</div>
-                  <div className="text-xs text-purple-700">Get Ad-free experience & Expert support</div>
-                </div>
-              </div>
-            </Card>
+              </Card>
+            ))}
           </div>
         </div>
-
 
         {/* Floating Voice Assistant Button (FAB) */}
         <Link to="/voice">
@@ -233,29 +274,6 @@ function HomePage() {
             </div>
           </div>
         </Link>
-
-        {/* Quick Stats */}
-        <Card className="bg-amber-50 border-amber-200">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between text-sm">
-              <div className="text-center">
-                <div className="font-semibold text-amber-700">🌾 {language === "en" ? "Today" : (language === "hi" ? "आज" : "આજે")}</div>
-                <div className="text-amber-600">3 {language === "en" ? "Queries" : (language === "hi" ? "प्रश्न" : "પ્રશ્નો")}</div>
-              </div>
-              <div className="text-center">
-                <div className="font-semibold text-amber-700">📈 {language === "en" ? "Trend" : "ट्रेंड"}</div>
-                <div className="text-amber-600 flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  +12%
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="font-semibold text-amber-700">🎯 {language === "en" ? "Accuracy" : (language === "hi" ? "सटीकता" : "ચોકસાઈ")}</div>
-                <div className="text-amber-600">94%</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
       </div>
     </div>
@@ -271,10 +289,41 @@ import ForumPage from "./pages/ForumPage";
 import SettingsPage from "./pages/SettingsPage";
 import VoicePage from "./pages/VoicePage";
 
+import SubscriptionPage from "./pages/SubscriptionPage";
+import ShopPage from "./pages/ShopPage";
+
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showSplash) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-gradient-to-b from-green-50 to-green-100 flex flex-col items-center justify-center p-8">
+        <div className="flex-1 flex flex-col items-center justify-center animate-pulse">
+          <div className="w-32 h-32 mb-6 rounded-full bg-white shadow-xl flex items-center justify-center p-4 border-4 border-green-500 overflow-hidden relative">
+            <img src="/logo.jpg" alt="AgriMitra Logo" className="w-full h-full object-contain relative z-10" />
+            <div className="absolute inset-0 bg-green-500/20 animate-ping rounded-full z-0"></div>
+          </div>
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-emerald-500 tracking-tight drop-shadow-sm mb-2">AgriMitra</h1>
+          <p className="text-green-700 font-medium">Your AI Farming Assistant</p>
+        </div>
+        <div className="pb-8 pt-4 flex flex-col items-center gap-1 opacity-80 animate-bounce">
+          <span className="text-xs font-bold text-gray-500 tracking-[0.2em] uppercase">Made in India</span>
+          <span className="text-2xl">🇮🇳</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Router>
-      <div className="min-h-screen pb-4 relative">
+      <div className="min-h-screen pb-4 relative animate-in fade-in duration-700">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/settings" element={<SettingsPage />} />
@@ -284,6 +333,8 @@ export default function App() {
           <Route path="/weather" element={<WeatherPage />} />
           <Route path="/diagnosis" element={<DiagnosisPage />} />
           <Route path="/forum" element={<ForumPage />} />
+          <Route path="/subscription" element={<SubscriptionPage />} />
+          <Route path="/shop" element={<ShopPage />} />
         </Routes>
 
         {/* Global Footer */}
